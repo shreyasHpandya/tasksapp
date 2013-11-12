@@ -1,0 +1,71 @@
+timestamp: 2013-11-09T23:48:43.958826
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2013-11-09T23:48:44.141476
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-11-09T23:48:44.320698
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-11-09T23:48:44.498655
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2013-11-09T23:48:44.678144
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-11-09T23:48:44.870076
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2013-11-10T21:45:16.603612
+CREATE TABLE task(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    due DATE,
+    status CHAR(1),
+    attachement CHAR(512)
+);
+success!
+timestamp: 2013-11-10T21:57:09.383056
+CREATE TABLE task_user_mapping(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task INTEGER REFERENCES task (id) ON DELETE CASCADE,
+    auth_user INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
