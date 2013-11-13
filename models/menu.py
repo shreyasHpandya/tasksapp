@@ -5,11 +5,11 @@
 ## Customize your APP title, subtitle and menus here
 #########################################################################
 
-response.logo = A(B('web',SPAN(2),'py'),XML('&trade;&nbsp;'),
-                  _class="brand",_href="http://www.web2py.com/")
+response.logo = ''  # A(B('web', SPAN(2), 'py'), XML('&trade;&nbsp;'),
+                  # _class="brand", _href="http://www.web2py.com/")
 response.title = ' '.join(
     word.capitalize() for word in request.application.split('_'))
-response.subtitle = T('customize me!')
+response.subtitle = T('')
 
 ## read more at http://dev.w3.org/html5/markup/meta.name.html
 response.meta.author = 'Your Name <you@example.com>'
@@ -25,14 +25,18 @@ response.google_analytics_id = None
 #########################################################################
 
 response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
+    (T('View Tasks'), False, URL('default', 'index'), [])
 ]
 
-DEVELOPMENT_MENU = True
+if auth.has_membership('manager'):
+    response.menu.append((T('+Add Task'), False, URL('default', 'createTask'), []))
+
+DEVELOPMENT_MENU = False
 
 #########################################################################
 ## provide shortcuts for development. remove in production
 #########################################################################
+
 
 def _():
     # shortcuts

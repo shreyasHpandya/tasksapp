@@ -1,5 +1,6 @@
 {{extend 'layout.html'}}
-{{=response.toolbar()}}
+{{#=response.toolbar()}}
+
 <ul>
   {{for task in tasks:}}
     <li>
@@ -7,6 +8,9 @@
       {{=task.due}}
       {{=task.status}}
       {{=A('close', callback=URL('closeTask', args=task.id), delete="li")}}
+      {{if auth.has_membership('manager'):}}
+      {{=A('update', callback=URL('updateTask', args=task.id), delete="li")}}
+      {{pass}}
     </li>
   {{pass}}
 </ul>
