@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
-#########################################################################
-## This is a samples controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-## - call exposes all registered services (none by default)
-#########################################################################
+#
+# This is a samples controller
+# - index is the default action of any application
+# - user is required for authentication and authorization
+# - download is for downloading files uploaded in the db (does streaming)
+# - call exposes all registered services (none by default)
+#
 
 
 @auth.requires_login()
@@ -21,10 +21,19 @@ def index():
     """
     tasks = None
     if auth.has_membership('manager'):
-        tasks = db(db.task.id>0).select()
+        tasks = db(db.task.id > 0).select()
     else:
-        tasks = db(db.task_user_mapping.user_id==auth.user.id).select()
+        tasks = db(db.task_user_mapping.auth_user == auth.user.id).select(
+            db.task.ALL,
+            join=[db.auth_user.on(db.task.id == db.task_user_mapping.task)], groupby=db.task.id)
     return dict(tasks=tasks)
+
+
+def closeTask():
+    task_id = request.args[0]
+    task = db(db.task.id == task_id).select().first()
+    task.update_record(status=True)
+    return "success"
 
 
 def user():

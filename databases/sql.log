@@ -69,3 +69,5 @@ CREATE TABLE task_user_mapping(
     auth_user INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
+timestamp: 2013-11-13T13:14:12.215778
+ALTER TABLE task ADD is_close CHAR(1);

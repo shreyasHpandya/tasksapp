@@ -1,2 +1,12 @@
 {{extend 'layout.html'}}
-{{=tasks}}
+{{=response.toolbar()}}
+<ul>
+  {{for task in tasks:}}
+    <li>
+      {{=task.name}}
+      {{=task.due}}
+      {{=task.status}}
+      {{=A('close', callback=URL('closeTask', args=task.id), delete="li")}}
+    </li>
+  {{pass}}
+</ul>
