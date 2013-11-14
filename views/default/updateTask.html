@@ -1,0 +1,61 @@
+{{extend 'layout.html'}}
+<form action="" enctype="multipart/form-data" method="post">
+    <table>
+        <tr id="task_name__row">
+            <td class="w2p_fl">
+                <label for="task_name" id="task_name__label">Name:</label>
+            </td>
+            <td class="w2p_fw">
+                <input class="string" id="task_name" name="name" type="text" value="{{=task.name}}" />
+            </td>
+            <td class="w2p_fc"></td>
+        </tr>
+        <tr id="task_due__row">
+            <td class="w2p_fl">
+                <label for="task_due" id="task_due__label">Due:</label>
+            </td>
+            <td class="w2p_fw">
+                <input class="date" id="task_due" name="due" type="text" value="{{=task.due}}" />
+            </td>
+            <td class="w2p_fc"></td>
+        </tr>
+        <tr id="task_status__row">
+            <td class="w2p_fl">
+                <label for="task_status" id="task_status__label">Is Closed:</label>
+            </td>
+            <td class="w2p_fw">
+                <input {{if task.status:}}checked="checked"{{pass}} class="boolean" id="task_status" name="status" type="checkbox"/>
+            </td>
+            <td class="w2p_fc"></td>
+        </tr>
+        <tr id="task_attachement__row">
+            <td class="w2p_fl">
+                <label for="task_attachement" id="task_attachement__label">Attachement:</label>
+            </td>
+            <td class="w2p_fw">
+                <input class="upload" id="task_attachement" name="attachement" type="file" value="{{=task.attachment or ''}}" />
+            </td>
+            <td class="w2p_fc"></td>
+        </tr>
+        <tr id="task_assignedto__row">
+            <td class="w2p_fl">
+                <label for="task_assignedto" id="task_assignedto__label">Assigned to:</label>
+            </td>
+            <td class="w2p_fw">
+                <select multiple="" name="assignedto" id="task_assignedto">
+                	{{for user in users:}}
+                    <option value="{{=user.id}}">{{=user.first_name}}</option>
+                    {{pass}}
+                </select>
+            </td>
+            <td class="w2p_fc"></td>
+        </tr>
+        <tr id="submit_record__row">
+            <td class="w2p_fl"></td>
+            <td class="w2p_fw">
+                <input type="submit" value="Submit" />
+            </td>
+            <td class="w2p_fc"></td>
+        </tr>
+    </table>
+</form>

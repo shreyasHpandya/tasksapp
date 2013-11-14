@@ -8,6 +8,7 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # - call exposes all registered services (none by default)
 #
+from datetime import date
 
 
 @auth.requires_login()
@@ -29,11 +30,38 @@ def index():
     return dict(tasks=tasks)
 
 
-def closeTask():
+@auth.requires_login()
+def toggleTask():
     task_id = request.args[0]
     task = db(db.task.id == task_id).select().first()
-    task.update_record(status=True)
-    return "success"
+    task.update_record(status=not task.status)
+    return str(task.status)
+
+
+@auth.requires_login()
+def updateTask():
+    task = db(db.task.id == request.args[0]).select().first()
+    if request.env.request_method == "GET":
+        response.flash = "please fill the form"
+    else:
+        task.name = request.post_vars.name
+        # if request.post_vars.due:
+        #     task.due = date(request.post_vars.due)
+        task.status = True if request.post_vars.status else False
+        if request.post_vars.attachment:
+            task.attachment = db.task.attachment.store(request.post_vars.attachment.file,
+                                                       request.post_vars.attachment.filename)
+        task.update_record()
+        response.flash = "Updated Successfully"
+    return dict(task=task, users=db(db.auth_user.id > 0).select())
+
+
+@auth.requires_login()
+def taskAttachment():
+    task = db(db.task.id == request.args[0]).select().first()
+    task.update_record(attachment=db.task.attachment.store(request.post_vars.attachment.file,
+                       request.post_vars.attachment.filename))
+    return dict()
 
 
 def user():

@@ -1,16 +1,60 @@
 {{extend 'layout.html'}}
-{{#=response.toolbar()}}
 
-<ul>
-  {{for task in tasks:}}
-    <li>
-      {{=task.name}}
-      {{=task.due}}
-      {{=task.status}}
-      {{=A('close', callback=URL('closeTask', args=task.id), delete="li")}}
+{{if not auth.has_membership('manager'):}}
+  LABEL('Status')
+  {{=SELECT('open', 'closed', 'all')}}
+{{pass}}
+
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Task Name</th>
+      <th>Due Date</th>
+      <th>Is Closed</th>
       {{if auth.has_membership('manager'):}}
-      {{=A('update', callback=URL('updateTask', args=task.id), delete="li")}}
+        <th></th>
       {{pass}}
-    </li>
-  {{pass}}
-</ul>
+    </tr>
+  </thead>
+  <tbody>
+    {{for task in tasks:}}
+      <tr>
+        <td>{{=task.id}}</td>
+        <td>{{=task.name}}</td>
+        <td>{{=task.due}}</td>
+        <td id="task-status-{{=task.id}}">{{=task.status}}</td>
+        <td id="close-task-{{=task.id}}"><a href="javascript:void(0);" onclick="closeTask('{{=URL('toggleTask', args=task.id)}}', {{=task.id}});">toggle</a></td>
+        {{if auth.has_membership('manager'):}}
+        <td>{{=A('update', _href=URL('updateTask', args=task.id))}}</td>
+        {{pass}}
+        <td><input id="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}"></td>
+      </tr>
+    {{pass}}
+</tbody>
+</table>
+
+<script type="text/javascript">
+  function closeTask(url, id){
+    var promise = $.ajax(url);
+    $.when(promise).then(function(data){
+      // $("a","#close-task-"+id).html('to');
+      $("#task-status-"+id).html(data);
+    });
+  }
+</script>
+
+<script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                $('<p/>').text(file.name).appendTo(document.body);
+            });
+        }
+    });
+});
+</script>
