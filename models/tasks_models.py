@@ -2,7 +2,7 @@ db.define_table('task',
                 Field('name', 'string'),
                 Field('due', 'date'),
                 Field('status', 'boolean'),
-                Field('attachement', 'upload'),
+                Field('attachment', 'upload'),
                 format='%(name)s %(id)s')
 
 db.define_table('task_user_mapping',

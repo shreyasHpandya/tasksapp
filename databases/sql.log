@@ -71,3 +71,5 @@ CREATE TABLE task_user_mapping(
 success!
 timestamp: 2013-11-13T13:14:12.215778
 ALTER TABLE task ADD is_close CHAR(1);
+timestamp: 2013-11-14T14:30:27.274544
+ALTER TABLE task ADD attachment CHAR(512);
