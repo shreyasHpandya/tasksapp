@@ -42,9 +42,9 @@
                 <label for="task_assignedto" id="task_assignedto__label">Assigned to:</label>
             </td>
             <td class="w2p_fw">
-                <select multiple="" name="assignedto" id="task_assignedto">
+                <select multiple="" name="users" id="task_assignedto">
                 	{{for user in users:}}
-                    <option value="{{=user.id}}">{{=user.first_name}}</option>
+                    <option value="{{=user.id}}" {{if user.id in selected_users:}}selected{{pass}}>{{=user.first_name}}</option>
                     {{pass}}
                 </select>
             </td>

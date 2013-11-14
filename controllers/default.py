@@ -20,13 +20,22 @@ def index():
     if you need a simple wiki simple replace the two lines below with:
     return auth.wiki()
     """
-    tasks = None
-    if auth.has_membership('manager'):
-        tasks = db(db.task.id > 0).select()
-    else:
-        tasks = db(db.task_user_mapping.auth_user == auth.user.id).select(
-            db.task.ALL,
-            join=[db.auth_user.on(db.task.id == db.task_user_mapping.task)], groupby=db.task.id)
+    tasks = db((db.task_user_mapping.auth_user == auth.user.id) & (db.task.status == False)).select(
+        db.task.ALL,
+        join=[db.auth_user.on(db.task.id == db.task_user_mapping.task)], groupby=db.task.id)
+    return dict(tasks=tasks)
+
+
+def closedTasks():
+    tasks = db((db.task_user_mapping.auth_user == auth.user.id) & (db.task.status == True)).select(
+        db.task.ALL,
+        join=[db.auth_user.on(db.task.id == db.task_user_mapping.task)], groupby=db.task.id)
+    return response.render('default/index.html', tasks=tasks)
+
+
+@auth.requires_membership('manager')
+def allTasks():
+    tasks = db(db.task.id > 0).select()
     return dict(tasks=tasks)
 
 
@@ -38,7 +47,7 @@ def toggleTask():
     return str(task.status)
 
 
-@auth.requires_login()
+@auth.requires_membership('manager')
 def updateTask():
     task = db(db.task.id == request.args[0]).select().first()
     if request.env.request_method == "GET":
@@ -52,8 +61,13 @@ def updateTask():
             task.attachment = db.task.attachment.store(request.post_vars.attachment.file,
                                                        request.post_vars.attachment.filename)
         task.update_record()
+        db(db.task_user_mapping.task == task.id).delete()
+        for user in request.post_vars.users:
+            db.task_user_mapping.insert(task=task.id, auth_user=user)
         response.flash = "Updated Successfully"
-    return dict(task=task, users=db(db.auth_user.id > 0).select())
+    return dict(task=task, users=db(db.auth_user.id > 0).select(),
+                selected_users=[mapping.auth_user for mapping in db(db.task_user_mapping.task == task.id)
+                                .select(db.task_user_mapping.auth_user)])
 
 
 @auth.requires_login()

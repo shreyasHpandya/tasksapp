@@ -25,11 +25,13 @@ response.google_analytics_id = None
 #########################################################################
 
 response.menu = [
-    (T('View Tasks'), False, URL('default', 'index'), [])
+    (T('My Tasks'), False, URL('default', 'index'), []),
+    (T('Closed Tasks'), False, URL('default', 'closedTasks'), [])
 ]
 
 if auth.has_membership('manager'):
     response.menu.append((T('+Add Task'), False, URL('default', 'createTask'), []))
+    response.menu.append((T('All Tasks'), False, URL('default', 'allTasks'), []))
 
 DEVELOPMENT_MENU = False
 
