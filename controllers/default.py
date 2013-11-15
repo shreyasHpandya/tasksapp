@@ -50,21 +50,28 @@ def toggleTask():
 
 @auth.requires_membership('manager')
 def createOrUpdateTask():
+    #Check whether Create or Update form required
     if request.args(0):
         task = db(db.task.id == request.args[0]).select().first()
         form = SQLFORM(db.task, task, upload=URL('default', 'download'))
-        selected_users = [user.auth_user for user in db(db.task_user_mapping.task == task.id).select(db.task_user_mapping.auth_user)]
+        selected_user_rows = db(db.task_user_mapping.task == task.id).select(db.task_user_mapping.auth_user)
+        selected_users = [user.auth_user for user in selected_user_rows]
     else:
         selected_users = []
         form = SQLFORM(db.task)
+    #add multiple select field for users
     all_users = db(db.auth_user.id > 0).select()
-    assingned_to = TR(LABEL('Assign To'), SELECT([OPTION(user.first_name,
-                                                 _value=user.id, value=selected_users) for user in all_users],
-                                                 _name="users", _multiple=''))
+    options = []
+    for user in all_users:
+        if user.id in selected_users:
+            options.append(OPTION(user.first_name, _value=user.id, _selected="selected"))
+        else:
+            options.append(OPTION(user.first_name, _value=user.id))
+    assingned_to = TR(LABEL('Assign To:'), SELECT(_name="users", _multiple='', *options))
     form[0].insert(-1, assingned_to)
+
     if request.env.request_method == "GET":
         response.flash = "please fill the form"
-        return dict(form=form)
     else:
         form = form.process()
         if form.accepted:
@@ -73,7 +80,8 @@ def createOrUpdateTask():
             for user in form.vars.users:
                 db.task_user_mapping.insert(task=form.vars.id, auth_user=user)
         else:
-            response.flash = "Please Correct the Errors"
+            if form.errors:
+                response.flash = "Correct Errors"
     return dict(form=form)
 
 
