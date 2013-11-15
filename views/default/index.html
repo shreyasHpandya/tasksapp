@@ -6,6 +6,7 @@
       <th>Id</th>
       <th>Task Name</th>
       <th>Due Date</th>
+      <th>Attachment</th>
       {{if auth.has_membership('manager'):}}
         <th></th>
       {{pass}}
@@ -17,11 +18,20 @@
         <td>{{=task.id}}</td>
         <td>{{=task.name}}</td>
         <td>{{=task.due}}</td>
+        <td>
+          {{if task.attachment:}}
+          {{=A(db.task.attachment.retrieve(task.attachment)[0], _href=URL('download', args=task.attachment))}}
+          {{else:}}
+          No Attachment
+          {{pass}}
+        </td>
         <td id="close-task-{{=task.id}}"><a href="javascript:void(0);" onclick="closeTask('{{=URL('toggleTask', args=task.id)}}', {{=task.id}});">toggle</a></td>
         {{if auth.has_membership('manager'):}}
         <td>{{=A('update', _href=URL('createOrUpdateTask', args=task.id))}}</td>
         {{pass}}
-        <td><input id="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}"></td>
+        <td>
+          <input id="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}">
+        </td>
       </tr>
     {{pass}}
 </tbody>
