@@ -27,7 +27,13 @@
         </td>
         <td id="close-task-{{=task.id}}"><a href="javascript:void(0);" onclick="closeTask('{{=URL('toggleTask', args=task.id)}}', {{=task.id}});">toggle</a></td>
         <td>{{=A('update', _href=URL('createOrUpdateTask', args=task.id))}}</td>
-        <td><input id="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}"></td>
+        <td>
+          <span class="btn btn-success fileinput-button">
+              <i class="glyphicon glyphicon-plus"></i>
+              <span>Attach File</span>
+              <input id="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}">
+          </span>
+        </td>
       </tr>
     {{pass}}
 </tbody>
