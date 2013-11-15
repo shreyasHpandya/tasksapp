@@ -8,9 +8,7 @@
       <th>Due Date</th>
       <th>Is Closed</th>
       <th>Attachment</th>
-      {{if auth.has_membership('manager'):}}
-        <th></th>
-      {{pass}}
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -28,9 +26,7 @@
           {{pass}}
         </td>
         <td id="close-task-{{=task.id}}"><a href="javascript:void(0);" onclick="closeTask('{{=URL('toggleTask', args=task.id)}}', {{=task.id}});">toggle</a></td>
-        {{if auth.has_membership('manager'):}}
         <td>{{=A('update', _href=URL('createOrUpdateTask', args=task.id))}}</td>
-        {{pass}}
         <td><input id="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}"></td>
       </tr>
     {{pass}}
