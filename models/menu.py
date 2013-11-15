@@ -30,7 +30,7 @@ response.menu = [
 ]
 
 if auth.has_membership('manager'):
-    response.menu.append((T('+Add Task'), False, URL('default', 'createTask'), []))
+    response.menu.append((T('+Add Task'), False, URL('default', 'createOrUpdateTask'), []))
     response.menu.append((T('All Tasks'), False, URL('default', 'allTasks'), []))
 
 DEVELOPMENT_MENU = False

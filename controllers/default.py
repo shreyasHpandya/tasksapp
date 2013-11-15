@@ -49,26 +49,32 @@ def toggleTask():
 
 
 @auth.requires_membership('manager')
-def updateTask():
-    task = db(db.task.id == request.args[0]).select().first()
+def createOrUpdateTask():
+    if request.args(0):
+        task = db(db.task.id == request.args[0]).select().first()
+        form = SQLFORM(db.task, task, upload=URL('default', 'download'))
+        selected_users = [user.auth_user for user in db(db.task_user_mapping.task == task.id).select(db.task_user_mapping.auth_user)]
+    else:
+        selected_users = []
+        form = SQLFORM(db.task)
+    all_users = db(db.auth_user.id > 0).select()
+    assingned_to = TR(LABEL('Assign To'), SELECT([OPTION(user.first_name,
+                                                 _value=user.id, value=selected_users) for user in all_users],
+                                                 _name="users", _multiple=''))
+    form[0].insert(-1, assingned_to)
     if request.env.request_method == "GET":
         response.flash = "please fill the form"
+        return dict(form=form)
     else:
-        task.name = request.post_vars.name
-        # if request.post_vars.due:
-        #     task.due = date(request.post_vars.due)
-        task.status = True if request.post_vars.status else False
-        if request.post_vars.attachment:
-            task.attachment = db.task.attachment.store(request.post_vars.attachment.file,
-                                                       request.post_vars.attachment.filename)
-        task.update_record()
-        db(db.task_user_mapping.task == task.id).delete()
-        for user in request.post_vars.users:
-            db.task_user_mapping.insert(task=task.id, auth_user=user)
-        response.flash = "Updated Successfully"
-    return dict(task=task, users=db(db.auth_user.id > 0).select(),
-                selected_users=[mapping.auth_user for mapping in db(db.task_user_mapping.task == task.id)
-                                .select(db.task_user_mapping.auth_user)])
+        form = form.process()
+        if form.accepted:
+            response.flash = "Done"
+            db(db.task_user_mapping.task == form.vars.id).delete()
+            for user in form.vars.users:
+                db.task_user_mapping.insert(task=form.vars.id, auth_user=user)
+        else:
+            response.flash = "Please Correct the Errors"
+    return dict(form=form)
 
 
 @auth.requires_login()
