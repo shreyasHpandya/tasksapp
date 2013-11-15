@@ -26,6 +26,7 @@ def index():
     return dict(tasks=tasks)
 
 
+@auth.requires_login()
 def closedTasks():
     tasks = db((db.task_user_mapping.auth_user == auth.user.id) & (db.task.status == True)).select(
         db.task.ALL,
