@@ -90,7 +90,10 @@ def taskAttachment():
     task = db(db.task.id == request.args[0]).select().first()
     task.update_record(attachment=db.task.attachment.store(request.post_vars.attachment.file,
                        request.post_vars.attachment.filename))
-    return dict()
+    result = {'files': [{'name': request.post_vars.attachment.filename}]}
+    response.headers['Content-Type'] = 'application/json'
+    import json
+    return json.dumps(result)
 
 
 def user():

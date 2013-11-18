@@ -31,7 +31,7 @@
           <span class="btn btn-success fileinput-button">
               <i class="glyphicon glyphicon-plus"></i>
               <span>Attach File</span>
-              <input id="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}">
+              <input class="fileupload" type="file" name="attachment" data-url="{{=URL('taskAttachment', args=task.id)}}">
           </span>
         </td>
       </tr>
@@ -51,12 +51,13 @@
 
 <script>
 $(function () {
-    $('#fileupload').fileupload({
-        dataType: 'json',
+    $('.fileupload').fileupload({
         done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                $('<p/>').text(file.name).appendTo(document.body);
-            });
+            console.log('done');
+
+        },
+        fail: function(e, data) {
+          console.log('Fail!');
         }
     });
 });
