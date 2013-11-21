@@ -18,7 +18,7 @@
         <td>{{=task.name}}</td>
         <td>{{=task.due}}</td>
         <td id="task-status-{{=task.id}}">{{=task.status}}</td>
-        <td>
+        <td id="attachment-{{=task.id}}">
           {{if task.attachment:}}
           {{=A(db.task.attachment.retrieve(task.attachment)[0], _href=URL('download', args=task.attachment))}}
           {{else:}}
@@ -53,8 +53,9 @@
 $(function () {
     $('.fileupload').fileupload({
         done: function (e, data) {
-            console.log('done');
-
+            $('.flash').html('File Uploaded <span id="closeflash">×</span>').show();
+            var base_download_url = "{{=URL('download')}}";
+            $('#attachment-'+data.result.files[0].task_id).html($('<a href='+base_download_url+'/'+data.result.files[0].url+' ></a>').text(data.result.files[0].name));
         },
         fail: function(e, data) {
           console.log('Fail!');

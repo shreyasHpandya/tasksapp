@@ -88,9 +88,17 @@ def createOrUpdateTask():
 @auth.requires_login()
 def taskAttachment():
     task = db(db.task.id == request.args[0]).select().first()
-    task.update_record(attachment=db.task.attachment.store(request.post_vars.attachment.file,
-                       request.post_vars.attachment.filename))
-    result = {'files': [{'name': request.post_vars.attachment.filename}]}
+    task.update_record(
+        attachment=db.task.attachment.store(request.post_vars.attachment.file,
+                                            request.post_vars.attachment.filename))
+    result = {
+        'files': [
+            {
+                'name': request.post_vars.attachment.filename,
+                'url': URL('default', 'download', args=task.attachment),
+                'task_id': task.id
+            }]}
+
     response.headers['Content-Type'] = 'application/json'
     import json
     return json.dumps(result)
